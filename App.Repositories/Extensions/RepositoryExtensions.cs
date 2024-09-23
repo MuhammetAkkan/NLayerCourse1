@@ -1,15 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using App.Repositories.Products;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
-
-
 namespace App.Repositories.Extensions;
 
 public static class RepositoryExtensions
@@ -18,14 +10,26 @@ public static class RepositoryExtensions
     {
         services.AddDbContext<AppDbContext>(options =>
         {
-            var connectionStrings = configuration.GetSection(ConnectionStringOption.Key).Get<ConnectionStringOption>();
-
+            var connectionStrings = configuration.GetSection(ConnectionStringOption.Key).Get<ConnectionStringOption>(); //GetSection ile bu alana ulaşıyor, Get ile de nesneyi alıyoruz.
+                
             options.UseSqlServer(connectionStrings!.SqlServer, sqlServerOptionsAction =>
             {
                 sqlServerOptionsAction.MigrationsAssembly(typeof(RepositoryAssembly).Assembly.FullName); //migration işlemleri için gerekli
             });
 
         });
+
+        //scoped lar dbContext ile ilgili olduğu için burada tanımlanmalıdır.
+
+        //genel scoped
+        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+        //Product scoped
+        services.AddScoped<IProductRepository, ProductRepository>();
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
         return services;
         // Add your repository extensions here
     
