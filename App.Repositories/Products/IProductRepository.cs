@@ -6,6 +6,8 @@ public interface IProductRepository : IGenericRepository<Product>
     //Product a özgü sorguları burada yazacağız.
     public Task<List<Product>> GetTopPriceProductsAsync(int count);
 
+    public Task<List<Product>> GetMinStockProducts(int minStockCount);
+
 
 
 }

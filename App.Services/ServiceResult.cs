@@ -5,6 +5,8 @@ namespace App.Services;
 public class ServiceResult<T>
 {
     public T? Data { get; set; } //Başarılı olduğunda T tipinde bir data döndürülecek
+
+    public List<T>? Datas { get; set; } //Başarılı olduğunda T tipinde bir data serisi döndürülecek
     public List<string>? ErrorMessage { get; set; } //Başarısız olma durumunda hataları tutacak.
 
     public bool IsSuccess => ErrorMessage == null || ErrorMessage.Count == 0; //Başarılı olma durumunu kontrol eder.
@@ -20,7 +22,16 @@ public class ServiceResult<T>
     { //default bir http status code belirledik.
         return new ServiceResult<T>
         {
-            Data = data,
+            Data = data, //nesne döndürülecek yani data döndürülecek.
+            StatusCode = statusCode,
+        };
+    }
+
+    public static ServiceResult<T> Success(List<T> datas, HttpStatusCode statusCode = HttpStatusCode.OK)
+    { //default bir http status code belirledik.
+        return new ServiceResult<T>
+        {
+            Datas = datas,
             StatusCode = statusCode,
         };
     }
