@@ -1,7 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-
-namespace App.Repositories;
+﻿    namespace App.Repositories;
 
 public class UnitOfWork(AppDbContext context) : IUnitOfWork
 {
@@ -11,5 +8,5 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
 
     public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync(); //tek satır olduğunda return kullanmaya gerek yoktur.
 
-
+    
 }

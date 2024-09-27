@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace App.Repositories.Products
+namespace App.Repositories.Products;
+
+public class Product
 {
-    public class Product
-    {
-        [Key]
-        public int Id { get; set; }
-        public string Name { get; set; } = default!;
-        public decimal Price { get; set; }
-        public int Stock { get; set; }
-    }
+    [Key]
+    public int Id { get; set; }
+    public string Name { get; set; } = default!;
+    public decimal Price { get; set; }
+    public int Stock { get; set; }
 }

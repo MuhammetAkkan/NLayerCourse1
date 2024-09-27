@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace App.Repositories
 {
-    public class GenericRepository<T> (AppDbContext context) : IGenericRepository<T> where T : class
+    public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> where T : class
     {
         //ctor oluşturmadık da public class GenericRepository<T> (AppDbContext context) burada contexti alıyoruz.
 

@@ -1,19 +1,26 @@
 ﻿using System.Net;
+using System.Text.Json.Serialization;
 
-namespace App.Services;
-
-public class ServiceResult<T>
+namespace App.Services.ServiceResult;
+/*
+ * Bir servisten alacağın cevap bunlardır.
+ */
+public partial class ServiceResult<T>
 {
-    public T? Data { get; set; } //Başarılı olduğunda T tipinde bir data döndürülecek
+    public T? Data { get; set; } //Başarılı olduğunda T tipinde bir data döndürülecek.
 
     public List<T>? Datas { get; set; } //Başarılı olduğunda T tipinde bir data serisi döndürülecek
     public List<string>? ErrorMessage { get; set; } //Başarısız olma durumunda hataları tutacak.
 
+    [JsonIgnore]
     public bool IsSuccess => ErrorMessage == null || ErrorMessage.Count == 0; //Başarılı olma durumunu kontrol eder.
 
+    [JsonIgnore]
     public bool IsFail => !IsSuccess; //Başarısız olma durumunu kontrol eder.
 
-    public HttpStatusCode StatusCode { get; set; }
+    [JsonIgnore]
+    public HttpStatusCode Status { get; set; }
+
 
 
 
@@ -23,16 +30,18 @@ public class ServiceResult<T>
         return new ServiceResult<T>
         {
             Data = data, //nesne döndürülecek yani data döndürülecek.
-            StatusCode = statusCode,
+            Status = statusCode,
         };
     }
+
+
 
     public static ServiceResult<T> Success(List<T> datas, HttpStatusCode statusCode = HttpStatusCode.OK)
     { //default bir http status code belirledik.
         return new ServiceResult<T>
         {
             Datas = datas,
-            StatusCode = statusCode,
+            Status = statusCode,
         };
     }
 
@@ -42,7 +51,7 @@ public class ServiceResult<T>
         return new ServiceResult<T>
         {
             ErrorMessage = errorMessage,
-            StatusCode = statusCode
+            Status = statusCode
         };
     }
 
@@ -51,8 +60,12 @@ public class ServiceResult<T>
         return new ServiceResult<T>
         {
             ErrorMessage = [errorMessage],
-            StatusCode = statusCode
+            Status = statusCode
         };
     }
+
+
+
+
 
 }

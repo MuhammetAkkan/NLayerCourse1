@@ -11,7 +11,7 @@ public static class RepositoryExtensions
         services.AddDbContext<AppDbContext>(options =>
         {
             var connectionStrings = configuration.GetSection(ConnectionStringOption.Key).Get<ConnectionStringOption>(); //GetSection ile bu alana ulaşıyor, Get ile de nesneyi alıyoruz.
-                
+
             options.UseSqlServer(connectionStrings!.SqlServer, sqlServerOptionsAction =>
             {
                 sqlServerOptionsAction.MigrationsAssembly(typeof(RepositoryAssembly).Assembly.FullName); //migration işlemleri için gerekli
@@ -32,7 +32,7 @@ public static class RepositoryExtensions
 
         return services;
         // Add your repository extensions here
-    
+
     }
 }
 
