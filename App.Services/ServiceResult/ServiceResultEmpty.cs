@@ -1,9 +1,8 @@
 ﻿using System.Net;
 
-namespace App.Services.ServiceResult;
-
 public class ServiceResultEmpty
 {
+    /*
     public List<string>? ErrorMessage { get; set; } //Başarısız olma durumunda hataları tutacak.
 
     public bool IsSuccess => ErrorMessage == null || ErrorMessage.Count == 0; //Başarılı olma durumunu kontrol eder.
@@ -42,6 +41,7 @@ public class ServiceResultEmpty
             Status = statusCode
         };
     }
+    */
 
 
 }

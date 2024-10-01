@@ -1,4 +1,4 @@
-﻿using App.Services.ServiceResult;
+﻿using App.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -15,13 +15,15 @@ namespace App.Api.Controllers
         [NonAction] //end point olmasını istemiyorum.
         public IActionResult CustomActionResult<T>(ServiceResult<T> result)
         {
-            if(result.Status == HttpStatusCode.NoContent)
+            if (result.Status == HttpStatusCode.NoContent)
+                return NoContent();
+
+
+            if(result.Status == HttpStatusCode.Created)
             {
-                return new ObjectResult(null)
-                {
-                    StatusCode = result.Status.GetHashCode()
-                };
-            }
+                return Created(result.UrlAsCreated ,result);
+            }   
+
 
             return new ObjectResult(result)
             {
@@ -32,7 +34,7 @@ namespace App.Api.Controllers
 
 
         [NonAction] //end point olmasını istemiyorum.
-        public IActionResult CustomActionResult(ServiceResultEmpty result)
+        public IActionResult CustomActionResult(ServiceResult result)
         {
             if (result.Status == HttpStatusCode.NoContent)
             {

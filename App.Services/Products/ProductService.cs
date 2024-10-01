@@ -1,24 +1,22 @@
 ﻿using App.Repositories;
 using App.Repositories.Products;
-using App.Services.ServiceResult;
-using Microsoft.AspNetCore.Mvc;
+using App.Service;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 namespace App.Services.Products;
 
 //servce katmnanı genellikle bir repository katmanınından referans ile bir nesne alır ve işlemleri yapar.
-public class ProductService(IProductRepository productRepository, IUnitOfWork unitOfWork) : IProductService
+public class ProductService(IProductRepository _productRepository, IUnitOfWork unitOfWork) : IProductService
 {
     /*
      * ProductRepositroyden nesne alıyor çünkü öncelikle datanın gelmesi lazım.
      * 
      */
-
-
+    
     public async Task<ServiceResult<List<ProductDTO>>> GetAllListAsync()
     {
         // data katmanından veri çekme işlemi
-        var products = await productRepository.GetAll().ToListAsync();
+        var products = await _productRepository.GetAll().ToListAsync();
 
         
         // Mapping işlemi
@@ -29,16 +27,16 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
     }
 
 
-    public async Task<ServiceResult<List<ProductDTO>>> GetPagedListAsnyc(int pageNumber, int pageSize)
+    public async Task<ServiceResult<List<ProductDTO>>> GetPagedListAsnyc(int pageNumber, int pageCapacity)
     {
 
         //skip ve take metotları ile sayfalama işlemi yapılır.
         //skip bize kaçıncı elemandan başlayacağımızı söyler.
 
 
-        var skipValue = (pageNumber - 1) * pageSize;
+        var skipValue = (pageNumber - 1) * pageCapacity;
 
-        var products = await productRepository.GetAll().Skip(skipValue).Take(pageSize).ToListAsync();
+        var products = await _productRepository.GetAll().Skip(skipValue).Take(pageCapacity).ToListAsync();
 
         var asProductsDto = products.Select(x => new ProductDTO(x.Id, x.Name, x.Price, x.Stock)).ToList();
 
@@ -49,7 +47,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
     public async Task<ServiceResult<List<ProductDTO>>> GetTopPriceProductsAsync(int count)
     {
         // data katmanından veri çekme işlemi
-        var products = await productRepository.GetTopPriceProductsAsync(count);
+        var products = await _productRepository.GetTopPriceProductsAsync(count);
 
         // Eğer products null ise erken dönüş yapalım
         if (products is null || !products.Any())
@@ -69,7 +67,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
     //birden falza nesne döndüğünden ProductResponse için mapleme yapılmıştır.
     public async Task<ServiceResult<List<ProductDTO>>> GetMinStockProducts(int minStockCount)
     {
-        var products = await productRepository.GetMinStockProducts(minStockCount);
+        var products = await _productRepository.GetMinStockProducts(minStockCount);
 
         if (products is null || !products.Any())
         {
@@ -85,9 +83,11 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
 
 
     //tek bir nesne döndüğünden doğruda ProductResponse döndürülmüştür.
+
+    
     public async Task<ServiceResult<ProductDTO?>> GetByIdAsync(int id)
     {
-        var products = await productRepository.GetByIdAsync(id);
+        var products = await _productRepository.GetByIdAsync(id);
 
         if (products is null)
         {
@@ -103,29 +103,34 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
 
     public async Task<ServiceResult<CreateProductResponse>> CreateProductResponse(CreateProductRequest request)
     {
+        
         var product = new Product()
         {
-            Name = request.Name,
+            Name = request.Name!,
             Price = request.Price,
             Stock = request.Stock
         };
 
-        await productRepository.AddAsync(product);
+        await _productRepository.AddAsync(product);
 
         await unitOfWork.SaveChangesAsync();
 
-        return ServiceResult<CreateProductResponse>.Success(new CreateProductResponse(product.Id));
+
+        var url = $"api/products/{product.Id}";
+
+
+        return ServiceResult<CreateProductResponse>.SuccessAsCreated(new CreateProductResponse(product.Id), url);
 
     }
 
 
-    public async Task<ServiceResultEmpty> UpdateAsync(int id, UpdateProductRequest request)
+    public async Task<ServiceResult> UpdateAsync(int id, UpdateProductRequest request)
     {
-        var product = await productRepository.GetByIdAsync(id);
+        var product = await _productRepository.GetByIdAsync(id);
 
         if (product is null)
         {
-            return ServiceResultEmpty.Fail("Product is null", HttpStatusCode.BadRequest);
+            return ServiceResult.Fail("Product is null", HttpStatusCode.BadRequest);
         }
 
         product.Name = request.Name;
@@ -133,33 +138,102 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         product.Stock = request.Stock;
 
 
-        productRepository.Update(product);
+        _productRepository.Update(product);
 
         await unitOfWork.SaveChangesAsync();
 
-        return ServiceResultEmpty.Success(HttpStatusCode.NoContent);
+        return ServiceResult.Success(HttpStatusCode.NoContent);
     }
 
 
-    public async Task<ServiceResultEmpty> DeleteAsync(int id)
+    public async Task<ServiceResult> DeleteAsync(int id)
     {
-        var product = await productRepository.GetByIdAsync(id);
+        var product = await _productRepository.GetByIdAsync(id);
 
         if(product is null)
         {
-            return ServiceResultEmpty.Fail("Product is null", HttpStatusCode.BadRequest);
+            return ServiceResult.Fail("Product is null", HttpStatusCode.BadRequest);
         }
 
-        productRepository.Delete(product);
+        _productRepository.Delete(product);
 
         await unitOfWork.SaveChangesAsync();
 
-        return ServiceResultEmpty.Success(HttpStatusCode.NoContent);
+        return ServiceResult.Success(HttpStatusCode.NoContent);
 
     }
 
 
+    public async Task<ServiceResult> UpdateProductStock(UpdateProductStockRequest request)
+    {
+        var product = await _productRepository.GetByIdAsync(request.Id);
+
+        if (product is null)
+        {
+            return ServiceResult.Fail("Product is null", HttpStatusCode.BadRequest);
+        }
+
+        product.Stock = request.Stock;
+
+        _productRepository.Update(product);
+
+        await unitOfWork.SaveChangesAsync();
+
+        return ServiceResult.Success(HttpStatusCode.NoContent);
+    }
+
+    
+
+    public async Task<ServiceResult> EnterDataInStock(int id, int stockCount)
+    {
+        var product = await _productRepository.GetByIdAsync(id);
+
+        if (product is null) 
+        {
+            return ServiceResult.Fail("Product is null", HttpStatusCode.BadRequest);
+        }
+
+        product.Stock += stockCount; //stock güncellendi.
+
+        _productRepository.Update(product);
+
+        await unitOfWork.SaveChangesAsync();
+
+        return ServiceResult.Success(HttpStatusCode.NoContent);
+
+    }
+
+    public async Task<ServiceResult> UpdatePrice(int id, decimal price)
+    {
+        var product = await _productRepository.GetByIdAsync(id);
+
+        if (product is null)
+            return ServiceResult.Fail("Product is null", HttpStatusCode.BadRequest);
+        
+        product.Price = price;
+
+        _productRepository.Update(product);
+
+        await unitOfWork.SaveChangesAsync();
+
+        return ServiceResult.Success(HttpStatusCode.NoContent);
+
+    }
+
+    public async Task<ServiceResult<ProductDTO>> GetPriceWithKDV(int id)
+    {
+        var product = await _productRepository.GetByIdAsync(id);
+
+        if (product is null)
+            return ServiceResult<ProductDTO>.Fail("Product is null", HttpStatusCode.BadRequest);
 
 
+        var priceWithKDV = product.Price * 1.20m;
+
+        return ServiceResult<ProductDTO>.Success(new ProductDTO(product.Id, product.Name, priceWithKDV, product.Stock));
+
+    }
+
+   
 }
 

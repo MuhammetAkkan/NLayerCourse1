@@ -15,12 +15,12 @@ namespace App.Api.Controllers
             => CustomActionResult(await productService.GetAllListAsync());
 
 
-        [HttpGet("{pageNumber}/{pageSize}")]
-        public async Task<IActionResult> GetPagedListAsnyc(int pageNumber, int pageSize)
-            => CustomActionResult(await productService.GetPagedListAsnyc(pageNumber, pageSize));
+        [HttpGet("{pageNumber:int}/{pageCapacity:int}")]
+        public async Task<IActionResult> GetPagedListAsnyc(int pageNumber, int pageCapacity)
+            => CustomActionResult(await productService.GetPagedListAsnyc(pageNumber, pageCapacity));
 
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetByIdAsnyc(int id)
         => CustomActionResult(await productService.GetByIdAsync(id));
 
@@ -30,12 +30,35 @@ namespace App.Api.Controllers
             => CustomActionResult(await productService.CreateProductResponse(request));
 
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, UpdateProductRequest request)
             => CustomActionResult(await productService.UpdateAsync(id, request));
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
             => CustomActionResult(await productService.DeleteAsync(id));
+
+
+        [HttpPost("{id:int}/{stockCount:int}")]
+        public async Task<IActionResult> EnterDataInStock(int id, int stockCount)
+            => CustomActionResult(await productService.EnterDataInStock(id, stockCount));
+
+        [HttpPut("{id:int}/{price:decimal}")]
+        public async Task<IActionResult> UpdatePrice(int id, decimal price)
+            => CustomActionResult(await productService.UpdatePrice(id, price));
+
+
+        [HttpGet("GetPriceWithKdv{id:int}")]
+        public async Task<IActionResult> GetPriceWithKDV(int id)
+            => CustomActionResult(await productService.GetPriceWithKDV(id));
+
+
+        //kısmi güncellemelerde Patch kullanılır
+
+        [HttpPatch("/stockCount")]
+        public async Task<IActionResult> UpdateProductRequest(UpdateProductStockRequest request)
+            => CustomActionResult(await productService.UpdateProductStock(request));
+
+
     }
 }
