@@ -1,12 +1,16 @@
 ﻿using App.Repositories;
 using App.Repositories.Products;
 using App.Service;
+using App.Services.Products.Create;
+using App.Services.Products.Update;
+using AutoMapper;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 namespace App.Services.Products;
 
 //servce katmnanı genellikle bir repository katmanınından referans ile bir nesne alır ve işlemleri yapar.
-public class ProductService(IProductRepository _productRepository, IUnitOfWork unitOfWork) : IProductService
+public class ProductService(IProductRepository _productRepository, IUnitOfWork unitOfWork, IValidator<CreateProductRequest> createProductValidator, IMapper mapper) : IProductService
 {
     /*
      * ProductRepositroyden nesne alıyor çünkü öncelikle datanın gelmesi lazım.
@@ -18,12 +22,19 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
         // data katmanından veri çekme işlemi
         var products = await _productRepository.GetAll().ToListAsync();
 
-        
-        // Mapping işlemi
-        var productResponse = products.Select(x => new ProductDTO(x.Id, x.Name, x.Price, x.Stock)).ToList();
+        #region //manuelMapping
+
+        //var productResponse = products.Select(x => new ProductDTO(x.Id, x.Name, x.Price, x.Stock)).ToList();
+        #endregion
+
+
+        #region AutoMapper is working
+        //autoMapper kullanarak mapping işlemi => IMapper mapper
+        var productAsDto = mapper.Map<List<ProductDTO>>(products);
+        #endregion
 
         // Başarılı sonuç döndürme
-        return ServiceResult<List<ProductDTO>>.Success(productResponse);
+        return ServiceResult<List<ProductDTO>>.Success(productAsDto);
     }
 
 
@@ -38,9 +49,14 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
 
         var products = await _productRepository.GetAll().Skip(skipValue).Take(pageCapacity).ToListAsync();
 
-        var asProductsDto = products.Select(x => new ProductDTO(x.Id, x.Name, x.Price, x.Stock)).ToList();
+        #region manuelMapping
+        //var asProductsDto = products.Select(x => new ProductDTO(x.Id, x.Name, x.Price, x.Stock)).ToList();
+        #endregion
 
-        return ServiceResult<List<ProductDTO>>.Success(asProductsDto);
+
+        var productAsDto = mapper.Map<List<ProductDTO>>(products);
+
+        return ServiceResult<List<ProductDTO>>.Success(productAsDto);
 
     }
 
@@ -56,7 +72,9 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
         }
 
         // Mapping işlemi
-        var productResponse = products.Select(x => new ProductDTO(x.Id, x.Name, x.Price, x.Stock)).ToList();
+        //var productResponse = products.Select(x => new ProductDTO(x.Id, x.Name, x.Price, x.Stock)).ToList();
+
+        var productResponse = mapper.Map<List<ProductDTO>>(products);
 
         // Başarılı sonuç döndürme
         return ServiceResult<List<ProductDTO>>.Success(productResponse);
@@ -91,12 +109,15 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
 
         if (products is null)
         {
-            ServiceResult<ProductDTO>.Fail("Product not found", HttpStatusCode.NotFound);
+            return ServiceResult<ProductDTO?>.Fail("Product not found", HttpStatusCode.NotFound);
+            
         }
 
-        var productAsResponse = new ProductDTO(products!.Id, products.Name, products.Price, products.Stock);
+        //var productAsResponse = new ProductDTO(products!.Id, products.Name, products.Price, products.Stock);
 
-        return ServiceResult<ProductDTO>.Success(productAsResponse)!;
+        var productAsResponse = mapper.Map<ProductDTO?>(products);
+
+        return ServiceResult<ProductDTO>.Success(productAsResponse!)!;
     }
 
 
@@ -104,6 +125,26 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
     public async Task<ServiceResult<CreateProductResponse>> CreateProductResponse(CreateProductRequest request)
     {
         
+        //Aynı isimden ürün eklemesini önlemek, 2.yaklaşım. Bu daha sağlıklı bir yaklaşım.
+        var anySameNameProduct = await _productRepository.Where(i => i.Name == request.Name).AnyAsync();
+
+        if(anySameNameProduct is true)
+        {
+            return ServiceResult<CreateProductResponse>.Fail("Product name is already exist", HttpStatusCode.BadRequest);
+        }
+
+
+        /*
+         * 3.yol => FluentValidation is used
+        var validationResult = createProductValidator.ValidateAsync(request);
+
+        if(!validationResult.Result.IsValid)
+        {
+            return ServiceResult<CreateProductResponse>.Fail(validationResult.Result.Errors.Select(i => i.ErrorMessage).ToList(), HttpStatusCode.BadRequest);
+        }
+        */
+
+
         var product = new Product()
         {
             Name = request.Name!,
@@ -117,7 +158,6 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
 
 
         var url = $"api/products/{product.Id}";
-
 
         return ServiceResult<CreateProductResponse>.SuccessAsCreated(new CreateProductResponse(product.Id), url);
 

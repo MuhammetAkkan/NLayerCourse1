@@ -19,6 +19,10 @@ public static class ServicesExtensions
         //
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+        services.AddAutoMapper(Assembly.GetExecutingAssembly()); //AutoMapper ekledik.
+
+
+
         return services;
         // Add your repository extensions here
 

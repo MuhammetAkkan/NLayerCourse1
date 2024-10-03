@@ -69,7 +69,7 @@ public class ServiceResult<T>
         return new ServiceResult<T>
         {
             ErrorMessage = new List<string> { errorMessage },
-            Status = statusCode
+            Status = HttpStatusCode.BadRequest
         };
     }
 
