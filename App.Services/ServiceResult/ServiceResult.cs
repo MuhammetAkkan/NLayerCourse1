@@ -32,7 +32,15 @@ public class ServiceResult<T>
             Status = statusCode,
         };
     }
-
+    
+    public static ServiceResult<T> Success(List<T> datas, HttpStatusCode statusCode = HttpStatusCode.OK)
+    { //default bir http status code belirledik.
+        return new ServiceResult<T>
+        {
+            Datas = datas,
+            Status = statusCode,
+        };
+    }
 
     public static ServiceResult<T> SuccessAsCreated(T data, string url)
     { //default bir http status code belirledik.
@@ -45,14 +53,7 @@ public class ServiceResult<T>
     }
 
 
-    public static ServiceResult<T> Success(List<T> datas, HttpStatusCode statusCode = HttpStatusCode.OK)
-    { //default bir http status code belirledik.
-        return new ServiceResult<T>
-        {
-            Datas = datas,
-            Status = statusCode,
-        };
-    }
+    
 
 
     public static ServiceResult<T> Fail(List<string> errorMessage, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
@@ -68,7 +69,7 @@ public class ServiceResult<T>
     {
         return new ServiceResult<T>
         {
-            ErrorMessage = new List<string> { errorMessage },
+            ErrorMessage = [errorMessage],
             Status = HttpStatusCode.BadRequest
         };
     }

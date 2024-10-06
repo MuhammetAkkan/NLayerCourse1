@@ -11,6 +11,7 @@ public decimal Price { get; init; }
 public int Stock { get; init; }
 
 */
+
 /*
 public class ProductDto
 {

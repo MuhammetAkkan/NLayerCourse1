@@ -1,6 +1,7 @@
 ﻿using App.Services.Products;
 using App.Services.Products.Create;
 using App.Services.Products.Update;
+using App.Services.Products.Update.Stock;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +30,7 @@ namespace App.Api.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateProductRequest request)
-            => CustomActionResult(await productService.CreateProductResponse(request));
+            => CustomActionResult(await productService.CreateAsync(request));
 
 
         [HttpPut("{id:int}")]
@@ -58,7 +59,7 @@ namespace App.Api.Controllers
         //kısmi güncellemelerde Patch kullanılır
 
         [HttpPatch("/stockCount")]
-        public async Task<IActionResult> UpdateProductRequest(UpdateProductStockRequest request)
+        public async Task<IActionResult> UpdateProductStockRequest(UpdateProductStockRequest request)
             => CustomActionResult(await productService.UpdateProductStock(request));
 
 

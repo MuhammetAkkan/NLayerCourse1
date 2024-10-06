@@ -1,4 +1,5 @@
-﻿using App.Services.Products;
+﻿using App.Services.ExceptionHandler;
+using App.Services.Products;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +22,8 @@ public static class ServicesExtensions
 
         services.AddAutoMapper(Assembly.GetExecutingAssembly()); //AutoMapper ekledik.
 
-
+        services.AddExceptionHandler<CriticalExceptionHandler>(); //exceptionHandler ekledik.
+        services.AddExceptionHandler<GlobalExceptionHandler>();
 
         return services;
         // Add your repository extensions here

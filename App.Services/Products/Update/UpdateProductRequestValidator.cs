@@ -1,17 +1,11 @@
-﻿using App.Repositories.Products;
-using App.Services.Products.Create;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
 
-namespace App.Services.Products;
+namespace App.Services.Products.Update;
 
-public class CreateProductRequestValidator : AbstractValidator<CreateProductRequest>
+public class UpdateProductRequestValidator : AbstractValidator<UpdateProductRequest>
 {
-    private readonly IProductRepository _productRepository;
-    public CreateProductRequestValidator(IProductRepository productRepository)
+    public UpdateProductRequestValidator()
     {
-
-
         RuleFor(i => i.Name)
             .NotNull().WithMessage($"Ürün ismi gereklidir.")
             .NotEmpty().WithMessage($"Ürün ismi boş olamaz gereklidir")
@@ -31,22 +25,5 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
         RuleFor(i => i.Stock)
             .GreaterThan(-1).WithMessage("Stock negatif olamaz")
             .Must(i => i % 1 == 0).WithMessage("Stock tam sayı olmalıdır.");
-
-
-
-    }
-
-    //non-asynchronous method => MustUniqueProductName
-    private bool MustUniqueProductName(string name)
-    {
-        return !(_productRepository.Where(i => i.Name == name).Any());
-
-    }
-
-
-    //asynchronous method => MustUniqueProductName
-    private async Task<bool> MustUniqueProdutName(string name, CancellationToken cancellationToken)
-    {
-        return ! await (_productRepository.Where(i => i.Name == name).AnyAsync());
     }
 }

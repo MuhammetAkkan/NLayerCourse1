@@ -1,6 +1,7 @@
 ﻿using App.Service;
 using App.Services.Products.Create;
 using App.Services.Products.Update;
+using App.Services.Products.Update.Stock;
 namespace App.Services.Products;
 
 public interface IProductService
@@ -13,8 +14,8 @@ public interface IProductService
     Task<ServiceResult<List<ProductDTO>>> GetMinStockProducts(int minStockCount);
 
     Task<ServiceResult<ProductDTO?>> GetByIdAsync(int id);
-
-    Task<ServiceResult<CreateProductResponse>> CreateProductResponse(CreateProductRequest request);
+ 
+    Task<ServiceResult<CreateProductResponse>> CreateAsync(CreateProductRequest request);
 
 
     Task<ServiceResult> UpdateAsync(int id, UpdateProductRequest request);

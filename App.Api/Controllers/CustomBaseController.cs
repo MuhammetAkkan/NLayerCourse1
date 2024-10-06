@@ -13,21 +13,21 @@ namespace App.Api.Controllers
         //her seferinde yazacağım kodu base hale getirdim.
 
         [NonAction] //end point olmasını istemiyorum.
-        public IActionResult CustomActionResult<T>(ServiceResult<T> result)
+        public IActionResult CustomActionResult<T>(ServiceResult<T> serviceResultesult)
         {
-            if (result.Status == HttpStatusCode.NoContent)
+            if (serviceResultesult.Status == HttpStatusCode.NoContent)
                 return NoContent();
 
 
-            if(result.Status == HttpStatusCode.Created)
+            if(serviceResultesult.Status == HttpStatusCode.Created)
             {
-                return Created(result.UrlAsCreated ,result);
+                return Created(serviceResultesult.UrlAsCreated ,serviceResultesult);
             }   
 
 
-            return new ObjectResult(result)
+            return new ObjectResult(serviceResultesult)
             {
-                StatusCode = result.Status.GetHashCode()
+                StatusCode = serviceResultesult.Status.GetHashCode()
             };  
 
         }
