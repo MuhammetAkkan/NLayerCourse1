@@ -25,5 +25,10 @@ public class UpdateProductRequestValidator : AbstractValidator<UpdateProductRequ
         RuleFor(i => i.Stock)
             .GreaterThan(-1).WithMessage("Stock negatif olamaz")
             .Must(i => i % 1 == 0).WithMessage("Stock tam sayı olmalıdır.");
+
+        //CategoryId
+        RuleFor(i => i.Stock)
+            .GreaterThan(-1).WithMessage("Stock negatif olamaz")
+            .Must(i => i % 1 == 0).WithMessage("Stock tam sayı olmalıdır.");
     }
 }

@@ -118,7 +118,7 @@ public class ServiceResult
     {
         return new ServiceResult
         {
-            ErrorMessage = new List<string> { errorMessage },
+            ErrorMessage = [errorMessage ],
             Status = statusCode
         };
     }

@@ -16,7 +16,7 @@ public interface IGenericRepository<T> where T : class
      * var evenNumbers = numbers.Where(n => n % 2 == 0).ToList(); yapıp foreachte eventNumbers ın içine girersek verileri elde ederiz. => bu şekilde kullanılır.
      */
     ValueTask<T?> GetByIdAsync(int id); //Task yerine valueTask kullanıyoruz çünkü tek bir veri dönecek.
-    ValueTask AddAsync(T entity);
+    ValueTask CreateAsync(T entity);
     void Update(T entity); //void kullanıyoruz çünkü bir şey döndürmeyecek.
     void Delete(T entity);   //void kullanıyoruz çünkü bir şey döndürmeyecek.
 }

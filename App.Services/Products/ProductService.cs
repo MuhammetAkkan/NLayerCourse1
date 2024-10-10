@@ -24,7 +24,7 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
     {
         #region CriticalExceptionDenemesi=>Off
         //throw new CriticalException("Kritik bir hata meydana geldi.");
-        #endregion
+        #endregion  
 
         //throw new Exception("standart hata");
 
@@ -101,7 +101,9 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
         }
 
         //select yapmamız lazım çünkü birden fazla nesne dönecek. 1 den fazla nesne dönerken mapleme yapmak için Select kullanılır.
-        var productResponse = products.Select(x => new ProductDTO(x.Id, x.Name, x.Price, x.Stock)).ToList();
+        var productResponse = products.Select(x => new ProductDTO(x.Id, x.Name, x.Price, x.Stock, x.CategoryId)).ToList();
+
+        //mapper.Map(products, productResponse);
 
         return ServiceResult<List<ProductDTO>>.Success(productResponse);
     }
@@ -116,7 +118,7 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
 
         if (products is null)
         {
-            return ServiceResult<ProductDTO?>.Fail("Product not found", HttpStatusCode.NotFound);
+            return ServiceResult<ProductDTO?>.Fail(errorMessage:"Product not found", statusCode:HttpStatusCode.NotFound);
             
         }
 
@@ -131,14 +133,16 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
 
     public async Task<ServiceResult<CreateProductResponse>> CreateAsync(CreateProductRequest request)
     {
-        
+
         //Aynı isimden ürün eklemesini önlemek, 2.yaklaşım. Bu daha sağlıklı bir yaklaşım.
+        #region ProductNameValidation
         var anySameNameProduct = await _productRepository.Where(i => i.Name == request.Name).AnyAsync();
 
         if(anySameNameProduct is true)
         {
             return ServiceResult<CreateProductResponse>.Fail("Product name is already exist", HttpStatusCode.BadRequest);
         }
+        #endregion
 
 
         /*
@@ -151,7 +155,7 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
         }
         */
 
-        #region ManuelMapping
+        #region ManuelMapping_Off
         /* code
         var product = new Product()
         {
@@ -167,7 +171,7 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
         var product = mapper.Map<Product>(request);
         #endregion
 
-        await _productRepository.AddAsync(product);
+        await _productRepository.CreateAsync(product);
 
         await unitOfWork.SaveChangesAsync();
 
@@ -306,7 +310,7 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
 
         var priceWithKDV = product.Price * 1.20m;
 
-        return ServiceResult<ProductDTO>.Success(new ProductDTO(product.Id, product.Name, priceWithKDV, product.Stock));
+        return ServiceResult<ProductDTO>.Success(new ProductDTO(product.Id, product.Name, priceWithKDV, product.Stock, product.CategoryId));
 
     }
 

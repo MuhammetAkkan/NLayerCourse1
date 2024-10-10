@@ -10,12 +10,12 @@ public class GlobalExceptionHandler : IExceptionHandler
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         //response artık bu katmanda döndürmemiz lazım.
-
+        
         #region ServiseKatmanınaHatayıDönme
         var errorAsDto = ServiceResult.Fail(exception.Message ,HttpStatusCode.InternalServerError);
         #endregion
 
-        #region HttpContextResponseNotu
+        #region Notlar
         /*
          * hatanın statuskodu
          * hatanın content type'ı

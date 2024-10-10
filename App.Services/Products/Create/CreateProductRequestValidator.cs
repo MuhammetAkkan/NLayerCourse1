@@ -33,6 +33,11 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
             .Must(i => i % 1 == 0).WithMessage("Stock tam sayı olmalıdır.");
 
 
+        RuleFor(i=> i.CategoryId)
+            .GreaterThan(0).WithMessage("Kategori seçiniz.")
+            .NotEmpty().WithMessage("Kategori seçiniz.")
+            .NotNull().WithMessage("Kategori seçiniz");
+
 
     }
 

@@ -1,6 +1,6 @@
 ﻿namespace App.Services.Products;
 
-public record ProductDTO(int Id, string Name, decimal Price, int Stock);
+public record ProductDTO(int Id, string Name, decimal Price, int Stock, int CategoryId);
 //şuan ise sadece yukarıdaki gibi tasarlamamız yeterli.
 
 /*

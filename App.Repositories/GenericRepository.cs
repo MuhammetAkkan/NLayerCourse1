@@ -10,7 +10,7 @@ namespace App.Repositories
         private readonly DbSet<T> _dbSet = context.Set<T>(); //dbseti aldık ve T ye eşitledik.
 
 
-        public async ValueTask AddAsync(T entity) => await _dbSet.AddAsync(entity);
+        public async ValueTask CreateAsync(T entity) => await _dbSet.AddAsync(entity);
 
 
         public void Delete(T entity) => _dbSet.Remove(entity);
