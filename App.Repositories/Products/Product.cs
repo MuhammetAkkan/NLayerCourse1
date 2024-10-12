@@ -4,10 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace App.Repositories.Products;
 
-public class Product
+public class Product : BaseEntity<int>, IAuditEntity
 {
-    [Key]
-    public int Id { get; set; }
+
     public string Name { get; set; } = default!;
     public decimal Price { get; set; }
     public int Stock { get; set; }
@@ -17,4 +16,6 @@ public class Product
 
     [JsonIgnore]
     public Category Category { get; set; } = default!;
+    public DateTime Created { get; set; }
+    public DateTime? Updated { get; set; }
 }

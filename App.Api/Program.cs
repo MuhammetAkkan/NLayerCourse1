@@ -15,7 +15,7 @@ builder.Services.AddControllers(options => {
 });
 
 //.net in default üretmiş olduğu hata mesajlarını kapattım.
-builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+
 
 
 builder.Services.AddEndpointsApiExplorer();

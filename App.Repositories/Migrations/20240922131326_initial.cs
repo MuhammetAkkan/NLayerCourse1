@@ -5,7 +5,9 @@
 namespace App.Repositories.Migrations
 {
     /// <inheritdoc />
+// The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
     public partial class initial : Migration
+// The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

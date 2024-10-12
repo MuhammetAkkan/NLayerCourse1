@@ -1,6 +1,13 @@
 @App.Api_HostAddress = http://localhost:5045
 
-GET {{App.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+
+GET {{App.Api_HostAddress}}/api/products
+
+### delete product by id
+DELETE {{App.Api_HostAddress}}/api/products/33
+
+### get product by id
+GET {{App.Api_HostAddress}}/api/products/3
 
 ###
+

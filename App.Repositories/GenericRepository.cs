@@ -3,14 +3,19 @@ using System.Linq.Expressions;
 
 namespace App.Repositories
 {
-    public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> where T : class
+    public class GenericRepository<T, TId>(AppDbContext context) : IGenericRepository<T, TId> where T : BaseEntity<TId> where TId : struct
     {
         //ctor oluşturmadık da public class GenericRepository<T> (AppDbContext context) burada contexti alıyoruz.
+
+        
 
         private readonly DbSet<T> _dbSet = context.Set<T>(); //dbseti aldık ve T ye eşitledik.
 
 
         public async ValueTask CreateAsync(T entity) => await _dbSet.AddAsync(entity);
+
+
+        public async Task<bool> AnyAsync(TId id) => await _dbSet.AnyAsync(x => x.Id.Equals(id));
 
 
         public void Delete(T entity) => _dbSet.Remove(entity);

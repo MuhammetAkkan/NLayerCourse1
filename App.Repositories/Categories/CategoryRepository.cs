@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App.Repositories.Categories;
 
-public class CategoryRepository(AppDbContext context) : GenericRepository<Category>(context), ICategoryRepository
+public class CategoryRepository(AppDbContext context) : GenericRepository<Category, int>(context), ICategoryRepository
 {
     private readonly AppDbContext _context = context;
     public IQueryable<Category?> GetCategoryWithProducts()

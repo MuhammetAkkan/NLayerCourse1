@@ -1,4 +1,6 @@
-﻿using App.Services.Products;
+﻿    using App.Repositories.Products;
+    using App.Service.Filters;
+    using App.Services.Products;
 using App.Services.Products.Create;
 using App.Services.Products.Update;
 using App.Services.Products.Update.Stock;
@@ -23,6 +25,7 @@ namespace App.Api.Controllers
             => CustomActionResult(await productService.GetPagedListAsnyc(pageNumber, pageCapacity));
 
 
+        [ServiceFilter(typeof(NotFoundFilter<Product, int>))]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetByIdAsnyc(int id)
         => CustomActionResult(await productService.GetByIdAsync(id));
@@ -37,6 +40,8 @@ namespace App.Api.Controllers
         public async Task<IActionResult> Update(int id, UpdateProductRequest request)
             => CustomActionResult(await productService.UpdateAsync(id, request));
 
+
+        [ServiceFilter(typeof(NotFoundFilter<Product, int>))]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
             => CustomActionResult(await productService.DeleteAsync(id));

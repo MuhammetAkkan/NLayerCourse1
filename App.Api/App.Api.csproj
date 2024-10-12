@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\App.Repositories\App.Repositories.csproj" />
     <ProjectReference Include="..\App.Services\App.Services.csproj" />
+    <ProjectReference Include="..\App.Service\App.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

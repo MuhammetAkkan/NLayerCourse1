@@ -97,10 +97,7 @@ public class CategoryService(ICategoryRepository _categoryRepository, IUnitOfWor
     {
         var category = await _categoryRepository.GetByIdAsync(id);
 
-        if (category == null)
-            return ServiceResult.Fail("Category not found.", HttpStatusCode.NotFound);
-
-        _categoryRepository.Delete(category);
+        _categoryRepository.Delete(category!);
 
         await _unitOfWork.SaveChangesAsync();
 

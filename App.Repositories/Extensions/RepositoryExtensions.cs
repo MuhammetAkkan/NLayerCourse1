@@ -1,4 +1,5 @@
 ﻿using App.Repositories.Categories;
+using App.Repositories.Interceptors;
 using App.Repositories.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,12 +19,19 @@ public static class RepositoryExtensions
                 sqlServerOptionsAction.MigrationsAssembly(typeof(RepositoryAssembly).Assembly.FullName); //migration işlemleri için gerekli
             });
 
+            #region AddedInterceptor
+
+
+            options.AddInterceptors(new AuiditDbContextInterceptor());
+
+            #endregion
+
         });
 
         //scoped lar dbContext ile ilgili olduğu için burada tanımlanmalıdır.
 
         //genel scoped
-        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 
         //Product scoped
         services.AddScoped<IProductRepository, ProductRepository>();

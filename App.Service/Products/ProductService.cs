@@ -116,11 +116,7 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
     {
         var products = await _productRepository.GetByIdAsync(id);
 
-        if (products is null)
-        {
-            return ServiceResult<ProductDTO?>.Fail(errorMessage:"Product not found", statusCode:HttpStatusCode.NotFound);
-            
-        }
+
 
         //var productAsResponse = new ProductDTO(products!.Id, products.Name, products.Price, products.Stock);
 
@@ -185,20 +181,13 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
 
     public async Task<ServiceResult> UpdateAsync(int id, UpdateProductRequest request)
     {
-        #region Product_Any_Control
         var product = await _productRepository.GetByIdAsync(id);
-
-        if (product is null)
-        {
-            return ServiceResult.Fail("Product is null", HttpStatusCode.BadRequest);
-        }
-        #endregion
 
         #region ProductNameValidation
         //ürün ismi başka bir Id ye sahip ürüne de ait olmamalı.
-        var isProductNameExist = await _productRepository.Where(i => i.Name == request.Name && i.Id != product.Id).AnyAsync();
+        var isProductNameExist = await _productRepository.Where(i => i.Name == request.Name && i.Id != id).AnyAsync();
 
-        if (isProductNameExist       is true)
+        if (isProductNameExist)
         {
             return ServiceResult.Fail("Product name is already exist", HttpStatusCode.BadRequest);
         }
@@ -218,7 +207,7 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
         product = mapper.Map(request, product);
         #endregion
 
-        _productRepository.Update(product);
+        _productRepository.Update(product!);
 
         await unitOfWork.SaveChangesAsync();
 
@@ -230,12 +219,7 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
     {
         var product = await _productRepository.GetByIdAsync(id);
 
-        if(product is null)
-        {
-            return ServiceResult.Fail("Product is null", HttpStatusCode.BadRequest);
-        }
-
-        _productRepository.Delete(product);
+        _productRepository.Delete(product!);
 
         await unitOfWork.SaveChangesAsync();
 
