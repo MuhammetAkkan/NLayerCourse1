@@ -151,16 +151,7 @@ public class ProductService(IProductRepository _productRepository, IUnitOfWork u
         }
         */
 
-        #region ManuelMapping_Off
-        /* code
-        var product = new Product()
-        {
-            Name = request.Name!,
-            Price = request.Price,
-            Stock = request.Stock
-        };
-        */
-        #endregion
+        
 
         #region AutoMapper
         //elimizde bir nesne olmadığından doğrudan generic olarak yazdık.

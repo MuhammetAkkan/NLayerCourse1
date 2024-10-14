@@ -30,9 +30,6 @@ public class AuiditDbContextInterceptor : SaveChangesInterceptor
 
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = new CancellationToken())
     {
-
-        
-
         //base entity e ihtiyacımız var.
 
         foreach (var entry in eventData.Context!.ChangeTracker.Entries().ToList())
@@ -44,15 +41,7 @@ public class AuiditDbContextInterceptor : SaveChangesInterceptor
             if (entry.State is not EntityState.Added || entry.State is not EntityState.Modified) continue;
             
             Behaviors[entry.State].Invoke(eventData.Context, auditEntity);
-            
-
-
-            
-
         }
-
-
-
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 }

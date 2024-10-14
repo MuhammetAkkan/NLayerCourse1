@@ -26,6 +26,7 @@ public class CategoryService(ICategoryRepository _categoryRepository, IUnitOfWor
     }
 
 
+
     public async Task<ServiceResult<List<CategoryWithProductsDTO>>> GetCategoryWithProductsAsync()
     {
         var categories = await _categoryRepository.GetCategoryWithProducts().ToListAsync();
@@ -43,6 +44,8 @@ public class CategoryService(ICategoryRepository _categoryRepository, IUnitOfWor
 
         return ServiceResult<List<CategoryWithProductsDTO>>.Success(categoryWithProducts);
     }
+
+
 
     public async Task<ServiceResult<int>> CreateCategoryAsync(CreateCategoryRequest request)
     {

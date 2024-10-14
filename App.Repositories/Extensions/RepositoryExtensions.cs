@@ -20,10 +20,7 @@ public static class RepositoryExtensions
             });
 
             #region AddedInterceptor
-
-
             options.AddInterceptors(new AuiditDbContextInterceptor());
-
             #endregion
 
         });
